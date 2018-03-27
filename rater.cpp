@@ -364,6 +364,7 @@ class Course
     vector<GroupInfo> groups;
     GroupInfo group_all{"All", ""};
     map<string, int> groupidx;
+    vector<string> problem_order;
     map<string, ProblemInfo> problems;
     map<string, string> usergroups;
     map<string, set<string> > usergrsets;
@@ -397,6 +398,7 @@ public:
     }
     void add_problem(const string &name, int score, const string &category)
     {
+        problem_order.push_back(name);
         problems.insert(make_pair(name, ProblemInfo(name, score, category)));
         max_score += score;
     }
@@ -964,8 +966,10 @@ void Course::assign_users()
     }
     cout << "<th title=\"Total Problems\">T. P.</th>" << endl;
     if (show_problems) {
-        for (const auto &pii : problems) {
-            cout << "<th>" << pii.first << "</th>" << endl;
+        for (const auto &pn : problem_order) {
+            if (auto mi = problems.find(pn); mi != problems.end()) {
+                cout << "<th>" << mi->first << "</th>" << endl;
+            }
         }
     }
     if (show_accumulated) {
@@ -1053,22 +1057,24 @@ void Course::assign_users()
         cout << "<td>" << u.total_prob << "</td>";
 
         if (show_problems) {
-            for (const auto &pii : problems) {
-                const ProblemInfo &prob_info = pii.second;
-                const auto &cc = u.row[prob_info.get_column()];
-                cout << "<td>";
-                switch (cc.get_status()) {
-                case CellStatus::EMPTY:
-                    cout << "&nbsp;";
-                    break;
-                case CellStatus::PARTIAL:
-                    cout << cc.get_score();
-                    break;
-                case CellStatus::FULL:
-                    cout << "<b>" << cc.get_score() << "</b>";
-                    break;
+            for (const auto &pn : problem_order) {
+                if (auto mi = problems.find(pn); mi != problems.end()) {
+                    const ProblemInfo &prob_info = mi->second;
+                    const auto &cc = u.row[prob_info.get_column()];
+                    cout << "<td>";
+                    switch (cc.get_status()) {
+                    case CellStatus::EMPTY:
+                        cout << "&nbsp;";
+                        break;
+                    case CellStatus::PARTIAL:
+                        cout << cc.get_score();
+                        break;
+                    case CellStatus::FULL:
+                        cout << "<b>" << cc.get_score() << "</b>";
+                        break;
+                    }
+                    cout << "</td>";
                 }
-                cout << "</td>";
             }
         }
 
