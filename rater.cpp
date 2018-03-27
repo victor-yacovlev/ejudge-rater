@@ -951,10 +951,10 @@ void Course::assign_users()
     cout << "<th>Name</th>" << endl;
     cout << "<th>Group</th>" << endl;
     cout << "<th title=\"Total Score\">T. S.</th>" << endl;
-    cout << "<th title=\"Total Problems\">T. P.</th>" << endl;
     if (show_percent) {
-        cout << "<th>Perc</th>" << endl;
+        cout << "<th>%</th>" << endl;
     }
+    cout << "<th title=\"Total Problems\">T. P.</th>" << endl;
     if (show_problems) {
         for (const auto &pii : problems) {
             cout << "<th>" << pii.first << "</th>" << endl;
@@ -964,7 +964,7 @@ void Course::assign_users()
         cout << "<th>Accum</th>" << endl;
     }
     if (!hide_summary) {
-        if (!hide_marks) {
+        if (!hide_grades) {
             for (int i = 0; i < int(grades.size()); ++i) {
                 cout << "<th>" << grades[i].name << " (" << grades[i].marks[100] << ")</th>";
             }
@@ -981,7 +981,9 @@ void Course::assign_users()
             for (int i = 0; i < int(grades.size()); ++i) {
                 cout << "<th>" << grades[i].name << " S (" << grades[i].max_score << ")</th>";
                 cout << "<th>" << grades[i].name << " P (" << grades[i].prob_count << ")</th>";
-                cout << "<th>" << grades[i].name << " M (" << grades[i].marks[100] << ")</th>";
+                if (!hide_grades) {
+                    cout << "<th>" << grades[i].name << " M (" << grades[i].marks[100] << ")</th>";
+                }
             }
         }
     }
@@ -997,6 +999,8 @@ void Course::assign_users()
         auto ui = userinfos.find(name);
         if (ui == userinfos.end()) abort();
         UserInfo &u = ui->second;
+
+        cout << "<tr>" << endl;
         int cur_grade = u.total_score;
         int cur_grade_2 = u.total_prob;
         if (sort_mode == 1) {
@@ -1025,8 +1029,6 @@ void Course::assign_users()
                 prev_grade_str = to_string(nindex + 1) + "-" + to_string(endind);
             }
         }
-
-        cout << "<tr>" << endl;
         cout << "<td>" << prev_grade_str << "</td>";
         cout << "<td>" << u.name << "</td>";
         cout << "<td>" << u.group << "</td>";
@@ -1089,7 +1091,7 @@ void Course::assign_users()
                 cout << "<td><b>" << grad_summ_map[grad_summ] << "</b></td>";
             }
 
-            if (!hide_marks) {
+            if (!hide_grades) {
                 for (int i = 0; i < int(u.score_by_grad.size()); ++i) {
                     cout << "<td><b>" << u.mark_by_grad[i] << "</b></td>";
                 }
@@ -1115,7 +1117,9 @@ void Course::assign_users()
                     cout << "<td>" << u.score_by_grad[i] << " (" << perc1 << "%)" << "</td>";
                     cout << "<td>" << u.prob_by_grad[i] << "</td>";
 
-                    cout << "<td><b>" << u.mark_by_grad[i] << "</b></td>";
+                    if (!hide_grades) {
+                        cout << "<td><b>" << u.mark_by_grad[i] << "</b></td>";
+                    }
                 }
             }
         }
