@@ -381,6 +381,7 @@ class Course
     bool hide_marks = false;
     bool hide_grades = false;
     bool show_percent = false;
+    bool hide_group = false;
     string footer_name;
     string header_name;
     string notes_name;
@@ -471,6 +472,8 @@ bool Course::parse_config(const char *path)
             show_problems = true;
         } else if (!strcmp(cmd, "show_accumulated")) {
             show_accumulated = true;
+        } else if (!strcmp(cmd, "hide_group")) {
+            hide_group = true;
         } else if (!strcmp(cmd, "header")) {
             char ffile[1024];
             if (sscanf(buf, "%s%s%n", cmd, ffile, &n) != 2 || buf[n]) {
@@ -949,7 +952,9 @@ void Course::assign_users()
     cout << "<tr>" << endl;
     cout << "<th>N</th>" << endl;
     cout << "<th>Name</th>" << endl;
-    cout << "<th>Group</th>" << endl;
+    if (!hide_group) {
+        cout << "<th>Group</th>" << endl;
+    }
     cout << "<th title=\"Total Score\">T. S.</th>" << endl;
     if (show_percent) {
         cout << "<th>%</th>" << endl;
@@ -1031,7 +1036,9 @@ void Course::assign_users()
         }
         cout << "<td>" << prev_grade_str << "</td>";
         cout << "<td>" << u.name << "</td>";
-        cout << "<td>" << u.group << "</td>";
+        if (!hide_group) {
+            cout << "<td>" << u.group << "</td>";
+        }
 
         cout << "<td>" << u.total_score << "</td>";
         if (show_percent) {
