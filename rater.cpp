@@ -382,6 +382,7 @@ class Course
     bool hide_grades = false;
     bool show_percent = false;
     bool hide_group = false;
+    bool hide_statistics = false;
     string footer_name;
     string header_name;
     string notes_name;
@@ -474,6 +475,8 @@ bool Course::parse_config(const char *path)
             show_accumulated = true;
         } else if (!strcmp(cmd, "hide_group")) {
             hide_group = true;
+        } else if (!strcmp(cmd, "hide_statistics")) {
+            hide_statistics = true;
         } else if (!strcmp(cmd, "header")) {
             char ffile[1024];
             if (sscanf(buf, "%s%s%n", cmd, ffile, &n) != 2 || buf[n]) {
@@ -1136,47 +1139,49 @@ void Course::assign_users()
     cout << "</tbody>" << endl;
     cout << "</table>" << endl;
 
-    cout << "<h2>Statistics</h2>" << endl;
+    if (!hide_statistics) {
+        cout << "<h2>Statistics</h2>" << endl;
 
-    cout << "<table class=\"sortable\" border=\"1\">" << endl;
-    cout << "<thead>" << endl;
-    cout << "<tr><th>Group</th><th>Users</th><th>Rating average</th><th>R. mediana</th><th>R. sigma</th><th>Score average</th><th>S. mediana</th><th>S. sigma</th><th>Problem average</th><th>P. mediana</th><th>P. sigma</th></tr>" << endl;
-    cout << "</thead>" << endl;
-    cout << "<tbody>" << endl;
-    for (auto &g : groups) {
+        cout << "<table class=\"sortable\" border=\"1\">" << endl;
+        cout << "<thead>" << endl;
+        cout << "<tr><th>Group</th><th>Users</th><th>Rating average</th><th>R. mediana</th><th>R. sigma</th><th>Score average</th><th>S. mediana</th><th>S. sigma</th><th>Problem average</th><th>P. mediana</th><th>P. sigma</th></tr>" << endl;
+        cout << "</thead>" << endl;
+        cout << "<tbody>" << endl;
+        for (auto &g : groups) {
+            cout << "<tr>";
+            cout << "<td>" << g.get_name() << "</td>";
+            cout << "<td>" << g.get_user_count() << "</td>";
+            cout << "<td>" << g.get_place_avg_str() << "</td>";
+            cout << "<td>" << g.get_place_mediana_str() << "</td>";
+            cout << "<td>" << g.get_place_s_str() << "</td>";
+            cout << "<td>" << g.get_score_avg_str() << "</td>";
+            cout << "<td>" << g.get_score_mediana_str() << "</td>";
+            cout << "<td>" << g.get_score_s_str() << "</td>";
+            cout << "<td>" << g.get_problem_avg_str() << "</td>";
+            cout << "<td>" << g.get_problem_mediana_str() << "</td>";
+            cout << "<td>" << g.get_problem_s_str() << "</td>";
+            cout << "</tr>" << endl;
+        }
+        cout << "</tbody>" << endl;
+
+        cout << "<tfoot>" << endl;
         cout << "<tr>";
-        cout << "<td>" << g.get_name() << "</td>";
-        cout << "<td>" << g.get_user_count() << "</td>";
-        cout << "<td>" << g.get_place_avg_str() << "</td>";
-        cout << "<td>" << g.get_place_mediana_str() << "</td>";
-        cout << "<td>" << g.get_place_s_str() << "</td>";
-        cout << "<td>" << g.get_score_avg_str() << "</td>";
-        cout << "<td>" << g.get_score_mediana_str() << "</td>";
-        cout << "<td>" << g.get_score_s_str() << "</td>";
-        cout << "<td>" << g.get_problem_avg_str() << "</td>";
-        cout << "<td>" << g.get_problem_mediana_str() << "</td>";
-        cout << "<td>" << g.get_problem_s_str() << "</td>";
+        cout << "<td>" << group_all.get_name() << "</td>";
+        cout << "<td>" << group_all.get_user_count() << "</td>";
+        cout << "<td>" << group_all.get_place_avg_str() << "</td>";
+        cout << "<td>" << group_all.get_place_mediana_str() << "</td>";
+        cout << "<td>" << group_all.get_place_s_str() << "</td>";
+        cout << "<td>" << group_all.get_score_avg_str() << "</td>";
+        cout << "<td>" << group_all.get_score_mediana_str() << "</td>";
+        cout << "<td>" << group_all.get_score_s_str() << "</td>";
+        cout << "<td>" << group_all.get_problem_avg_str() << "</td>";
+        cout << "<td>" << group_all.get_problem_mediana_str() << "</td>";
+        cout << "<td>" << group_all.get_problem_s_str() << "</td>";
         cout << "</tr>" << endl;
-    }
-    cout << "</tbody>" << endl;
+        cout << "</tfoot>" << endl;
 
-    cout << "<tfoot>" << endl;
-    cout << "<tr>";
-    cout << "<td>" << group_all.get_name() << "</td>";
-    cout << "<td>" << group_all.get_user_count() << "</td>";
-    cout << "<td>" << group_all.get_place_avg_str() << "</td>";
-    cout << "<td>" << group_all.get_place_mediana_str() << "</td>";
-    cout << "<td>" << group_all.get_place_s_str() << "</td>";
-    cout << "<td>" << group_all.get_score_avg_str() << "</td>";
-    cout << "<td>" << group_all.get_score_mediana_str() << "</td>";
-    cout << "<td>" << group_all.get_score_s_str() << "</td>";
-    cout << "<td>" << group_all.get_problem_avg_str() << "</td>";
-    cout << "<td>" << group_all.get_problem_mediana_str() << "</td>";
-    cout << "<td>" << group_all.get_problem_s_str() << "</td>";
-    cout << "</tr>" << endl;
-    cout << "</tfoot>" << endl;
-    
-    cout << "</table>" << endl;
+        cout << "</table>" << endl;
+    }
 
     if (notes_name.size() > 0) {
         cout << read_file(notes_name);
