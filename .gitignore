@@ -1,3 +1,4 @@
-rater
+ejudge-rater
 *.html
 *.shtml
+Makefile
